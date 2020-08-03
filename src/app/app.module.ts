@@ -9,6 +9,8 @@ import { FlexLayoutModule } from '@angular/flex-layout';
 import { PageNotFoundComponent } from './page-not-found/page-not-found.component';
 import { HttpClientModule } from '@angular/common/http';
 import { HomeComponent } from './home/home.component';
+import {AuthService} from './auth/auth.service';
+import {InMemoryAuthService} from './auth/auth.inmemory.service';
 
 @NgModule({
   declarations: [
@@ -24,7 +26,12 @@ import { HomeComponent } from './home/home.component';
     FlexLayoutModule,
     HttpClientModule,
   ],
-  providers: [],
+  providers: [
+    {
+      provide: AuthService,
+      useClass: InMemoryAuthService
+    },
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
