@@ -7,9 +7,11 @@ import {filter, tap} from 'rxjs/operators';
 @Component({
   selector: 'app-manager',
   template: `
-    <div fxLayout="column" fxLayoutAlign="center center">
-      <span class="mat-display-2">Hello, Limoncu!</span>
-      <button mat-raised-button color="primary" routerLink="/manager" (click)="login()">Login As Manager</button>
+    <div *ngIf="displayLogin">
+      <app-login></app-login>
+    </div>
+    <div *ngIf="!displayLogin">
+      <span class="mat-display-3">You get a lemon, you get a lemon, you get a lemon...</span>
     </div>
   `,
   styles: [ `
@@ -17,6 +19,7 @@ import {filter, tap} from 'rxjs/operators';
   `]
 })
 export class HomeComponent implements OnInit {
+  displayLogin = true;
   constructor(
     private authService: AuthService,
     private router: Router

@@ -7,16 +7,20 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MaterialModule } from './material.module';
 import { FlexLayoutModule } from '@angular/flex-layout';
 import { PageNotFoundComponent } from './page-not-found/page-not-found.component';
-import { HttpClientModule } from '@angular/common/http';
+import {HTTP_INTERCEPTORS, HttpClientModule} from '@angular/common/http';
 import { HomeComponent } from './home/home.component';
 import {AuthService} from './auth/auth.service';
 import {InMemoryAuthService} from './auth/auth.inmemory.service';
+import {AuthHttpInterceptor} from './auth/auth-http-interceptor';
+import { LoginComponent } from './login/login.component';
+import {ReactiveFormsModule} from '@angular/forms';
 
 @NgModule({
   declarations: [
     AppComponent,
     HomeComponent,
     PageNotFoundComponent,
+    LoginComponent,
   ],
   imports: [
     BrowserModule,
@@ -25,11 +29,17 @@ import {InMemoryAuthService} from './auth/auth.inmemory.service';
     MaterialModule,
     FlexLayoutModule,
     HttpClientModule,
+    ReactiveFormsModule
   ],
   providers: [
     {
       provide: AuthService,
       useClass: InMemoryAuthService
+    },
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: AuthHttpInterceptor,
+      multi: true,
     },
   ],
   bootstrap: [AppComponent]

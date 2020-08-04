@@ -1,12 +1,12 @@
-import {BehaviorSubject, Observable, throwError} from 'rxjs';
-import {IUser, User} from '../user/user/user';
-import {Role} from './auth.enum';
 import { Injectable } from '@angular/core';
-import {catchError, filter, map, tap} from 'rxjs/operators';
-import {flatMap} from 'tslint/lib/utils';
-import {transformError} from '../common/common';
 import * as decode from 'jwt-decode';
-import {CacheService} from './cache.service';
+import { BehaviorSubject, Observable, pipe, throwError } from 'rxjs';
+import { catchError, filter, flatMap, map, tap } from 'rxjs/operators';
+
+import { transformError } from '../common/common';
+import { IUser, User } from '../user/user/user';
+import { Role } from './auth.enum';
+import { CacheService } from './cache.service';
 
 export interface IAuthStatus {
   isAuthenticated: boolean;
@@ -33,8 +33,17 @@ export interface IAuthService {
 }
 @Injectable()
 export abstract class AuthService extends CacheService implements IAuthService {
+  private getAndUpdateUserIfAuthenticated = pipe(
+    filter((status: IAuthStatus) => status.isAuthenticated),
+    flatMap(() => this.getCurrentUser()),
+    map((user: IUser) => this.currentUser$.next(user)),
+    catchError(transformError)
+  );
   readonly authStatus$ = new BehaviorSubject<IAuthStatus>(defaultAuthStatus);
   readonly currentUser$ = new BehaviorSubject<IUser>(new User());
+  protected readonly resumeCurrentUser$ = this.authStatus$.pipe(
+    this.getAndUpdateUserIfAuthenticated
+  );
   protected abstract authProvider(
     email: string,
     password: string
@@ -47,6 +56,7 @@ export abstract class AuthService extends CacheService implements IAuthService {
       this.logout(true);
     } else {
       this.authStatus$.next(this.getAuthStatusFromToken());
+      // setTimeout(() => this.resumeCurrentUser$.subscribe(), 0);
     }
   }
 
@@ -72,10 +82,11 @@ export abstract class AuthService extends CacheService implements IAuthService {
           return this.transformJwtToken(token);
         }),
         tap((status) => this.authStatus$.next(status)),
-        filter(status => status.isAuthenticated),
-        flatMap(() => this.getCurrentUser()),
-        map(user => this.currentUser$.next(user)),
-        catchError(transformError)
+        // filter(status => status.isAuthenticated),
+        // flatMap(() => this.getCurrentUser()),
+        // map(user => this.currentUser$.next(user)),
+        // catchError(transformError)
+        this.getAndUpdateUserIfAuthenticated
       );
     loginResponse$.subscribe({
       error: err => {

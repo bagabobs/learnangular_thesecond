@@ -60,7 +60,7 @@ export class User implements IUser {
     public phones: IPhone[] = []
   ) {}
 
-  static Build(user: IUser): IUser {
+  static Build(user: IUser): User {
     if (!user) {
       return new User();
     }
