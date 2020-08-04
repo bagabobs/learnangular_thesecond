@@ -3,7 +3,9 @@ import {Observable, of, throwError} from 'rxjs';
 import {PhoneType, User} from '../user/user/user';
 import {Role} from './auth.enum';
 import {sign} from 'fake-jwt-sign';
+import {Injectable} from '@angular/core';
 
+@Injectable()
 export class InMemoryAuthService extends AuthService {
   private defaultUser = User.Build({
     _id: '5da01751da27cc462d265913',
