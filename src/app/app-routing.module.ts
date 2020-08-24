@@ -3,6 +3,7 @@ import { Routes, RouterModule } from '@angular/router';
 import { HomeComponent } from './home/home.component';
 import { PageNotFoundComponent } from './page-not-found/page-not-found.component';
 import {LoginComponent} from './login/login.component';
+import {AuthGuardService} from './auth/auth-guard.service';
 
 
 const routes: Routes = [
@@ -11,7 +12,8 @@ const routes: Routes = [
   { path: 'manager',
     loadChildren:
       () => import('./manager/manager.module')
-        .then(m => m.ManagerModule)
+        .then(m => m.ManagerModule),
+    canLoad: [AuthGuardService],
   },
   { path: 'user',
     loadChildren:

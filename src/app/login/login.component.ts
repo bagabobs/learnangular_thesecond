@@ -1,10 +1,14 @@
 import { Component, OnInit } from '@angular/core';
 import { SubSink } from 'subsink';
-import {FormBuilder, FormGroup, Validators} from '@angular/forms';
+import {FormBuilder, FormGroup} from '@angular/forms';
 import {AuthService} from '../auth/auth.service';
 import {ActivatedRoute, Router} from '@angular/router';
 import {catchError, filter, tap} from 'rxjs/operators';
 import {combineLatest} from 'rxjs';
+import {EmailValidation, PasswordValidation} from '../common/validations';
+import {UiService} from '../common/ui.service';
+import {Role} from '../auth/auth.enum';
+
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
@@ -19,7 +23,8 @@ export class LoginComponent implements OnInit {
     private formBuilder: FormBuilder,
     private authService: AuthService,
     private router: Router,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private uiService: UiService
   ) {
     this.subs.sink = route.paramMap.subscribe(
      params => (this.redirectUrl = params.get('redirectUrl') ?? '')
@@ -33,8 +38,8 @@ export class LoginComponent implements OnInit {
 
   buildLoginForm(): void {
     this.loginForm = this.formBuilder.group({
-      email: ['', [Validators.required, Validators.email]],
-      password: ['', [Validators.required, Validators.minLength(8), Validators.maxLength(50)]]
+      email: ['', EmailValidation],
+      password: ['', PasswordValidation]
     });
   }
 
@@ -51,9 +56,24 @@ export class LoginComponent implements OnInit {
     ]).pipe(
       filter(([authUser, user]) => authUser.isAuthenticated && user?._id !== ''),
       tap(([authUser, user]) => {
-        this.router.navigate([this.redirectUrl || '/manager']);
+        this.uiService.showToast(`Welcome ${user.fullName}! Role: ${user.role}`);
+        this.router.navigate([this.redirectUrl ||
+        this.homeRoutePerRole(user.role as Role)]);
       })
     ).subscribe();
+  }
+
+  private homeRoutePerRole(role: Role): string {
+    switch (role) {
+      case Role.Cashier:
+        return '/pos';
+      case Role.Clerk:
+        return '/inventory';
+      case Role.Manager:
+        return '/manager';
+      default:
+        return '/user/profile';
+    }
   }
 
 }

@@ -53,6 +53,8 @@ export class InMemoryAuthService extends AuthService {
       userRole: email.includes('cashier')
       ? Role.Cashier
       : email.includes('clerk')
+      ? Role.Clerk
+      : email.includes('manager')
       ? Role.Manager
       : Role.None,
     } as IAuthStatus;

@@ -14,6 +14,8 @@ import {InMemoryAuthService} from './auth/auth.inmemory.service';
 import {AuthHttpInterceptor} from './auth/auth-http-interceptor';
 import { LoginComponent } from './login/login.component';
 import {ReactiveFormsModule} from '@angular/forms';
+import { SimpleDialogComponent } from './common/simple-dialog.component';
+import { NavigationMenuComponent } from './navigation-menu/navigation-menu.component';
 
 @NgModule({
   declarations: [
@@ -21,6 +23,8 @@ import {ReactiveFormsModule} from '@angular/forms';
     HomeComponent,
     PageNotFoundComponent,
     LoginComponent,
+    SimpleDialogComponent,
+    NavigationMenuComponent
   ],
   imports: [
     BrowserModule,
@@ -42,6 +46,7 @@ import {ReactiveFormsModule} from '@angular/forms';
       multi: true,
     },
   ],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent],
+  entryComponents: [SimpleDialogComponent]
 })
 export class AppModule { }

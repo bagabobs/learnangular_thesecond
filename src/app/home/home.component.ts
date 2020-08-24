@@ -7,21 +7,28 @@ import {filter, tap} from 'rxjs/operators';
 @Component({
   selector: 'app-manager',
   template: `
-    <div *ngIf="displayLogin">
+    <div *ngIf="(authService.authStatus$ | async)?.isAuthenticated; else doLogin">
+      <div class="mat-display-4">
+        This is LemonMart! The place where
+      </div>
+      <div class="mat-display-4">
+        You get lemon, you get lemon, you get lemon ...
+      </div>
+      <div class="mat-display-4">
+        Everybody gets lemon
+      </div>
+    </div>
+    <ng-template #doLogin>
       <app-login></app-login>
-    </div>
-    <div *ngIf="!displayLogin">
-      <span class="mat-display-3">You get a lemon, you get a lemon, you get a lemon...</span>
-    </div>
+    </ng-template>
   `,
   styles: [ `
     div[fxLayout] {margin-top: 32px;}
   `]
 })
 export class HomeComponent implements OnInit {
-  displayLogin = true;
   constructor(
-    private authService: AuthService,
+    public authService: AuthService,
     private router: Router
   ) { }
 
